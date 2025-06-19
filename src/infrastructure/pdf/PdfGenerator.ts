@@ -81,11 +81,15 @@ export class PdfGenerator implements IPdfGenerator {
     doc.setFontSize(10);
     
     const status = task.completed ? '[COMPLETED]' : '[PENDING]';
-    const statusColor = task.completed ? [0, 128, 0] : [255, 165, 0] as [number, number, number];
     
-    doc.setTextColor(...statusColor);
+    if (task.completed) {
+      doc.setTextColor(0, 128, 0); // Green for completed
+    } else {
+      doc.setTextColor(255, 165, 0); // Orange for pending
+    }
+    
     doc.text(status, 160, yPosition);
-    doc.setTextColor(0, 0, 0);
+    doc.setTextColor(0, 0, 0); // Reset to black
   }
 
   private calculateTaskHeight(doc: jsPDF, task: Task): number {

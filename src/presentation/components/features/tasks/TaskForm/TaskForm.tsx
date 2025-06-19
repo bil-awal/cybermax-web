@@ -10,6 +10,16 @@ import { useTasks } from '@/presentation/hooks/useTasks';
 import { createTaskSchema } from '@/core/application/dto/CreateTaskDTO';
 import { ZodError } from 'zod';
 
+const getErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  if (error && typeof error === 'object' && 'message' in error) {
+    return String(error.message);
+  }
+  return 'An unknown error occurred';
+};
+
 export const TaskForm: React.FC = () => {
   const { createTask } = useTasks();
   const [title, setTitle] = useState('');
@@ -34,10 +44,8 @@ export const TaskForm: React.FC = () => {
     } catch (error) {
       if (error instanceof ZodError) {
         setMessage({ type: 'error', text: error.errors[0].message });
-      } else if (error && typeof error === 'object' && 'message' in error) {
-        setMessage({ type: 'error', text: (error as any).message });
       } else {
-        setMessage({ type: 'error', text: 'Failed to create task' });
+        setMessage({ type: 'error', text: getErrorMessage(error) });
       }
     } finally {
       setLoading(false);

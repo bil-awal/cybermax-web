@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useCallback, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 import { Task } from '@/core/domain/entities/Task';
 import { LocalStorageTaskRepository } from '@/infrastructure/repositories/LocalStorageTaskRepository';
 import { CreateTaskUseCase } from '@/core/domain/usecases/CreateTaskUseCase';
@@ -27,13 +27,13 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Initialize repositories and use cases
-  const taskRepository = new LocalStorageTaskRepository();
-  const createTaskUseCase = new CreateTaskUseCase(taskRepository);
-  const getTasksUseCase = new GetTasksUseCase(taskRepository);
-  const updateTaskUseCase = new UpdateTaskUseCase(taskRepository);
-  const deleteTaskUseCase = new DeleteTaskUseCase(taskRepository);
-  const pdfGenerator = new PdfGenerator();
+  // Initialize repositories and use cases with useMemo to prevent recreation on every render
+  const taskRepository = useMemo(() => new LocalStorageTaskRepository(), []);
+  const createTaskUseCase = useMemo(() => new CreateTaskUseCase(taskRepository), [taskRepository]);
+  const getTasksUseCase = useMemo(() => new GetTasksUseCase(taskRepository), [taskRepository]);
+  const updateTaskUseCase = useMemo(() => new UpdateTaskUseCase(taskRepository), [taskRepository]);
+  const deleteTaskUseCase = useMemo(() => new DeleteTaskUseCase(taskRepository), [taskRepository]);
+  const pdfGenerator = useMemo(() => new PdfGenerator(), []);
 
   const fetchTasks = useCallback(async () => {
     try {
@@ -47,7 +47,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [getTasksUseCase]);
 
   const createTask = useCallback(async (params: { title: string; description?: string }) => {
     try {

@@ -22,25 +22,20 @@ export const TaskList: React.FC<TaskListProps> = ({
   sortBy = 'created_at',
   sortOrder = 'desc',
 }) => {
-  const { tasks, loading, error, generateReport, refetch, pagination } = useTasks();
+  const { tasks, loading, error, generateReport, refetch } = useTasks();
 
-  // Ensure we have default values for tasks
-  const safeTasks = tasks || [];
+  // Memoize safeTasks to prevent unnecessary re-renders
+  const safeTasks = useMemo(() => tasks || [], [tasks]);
   const displayTasks = searchResults || safeTasks;
 
-  // Calculate pagination from actual tasks if pagination is not available
+  // Calculate pagination from actual tasks
   const calculatedPagination = useMemo(() => {
-    if (pagination && pagination.total > 0) {
-      return pagination;
-    }
-    
-    // Fallback: calculate from actual tasks
     const total = safeTasks.length;
     const completed = safeTasks.filter(task => task.completed).length;
     const pending = total - completed;
     
     return { total, completed, pending };
-  }, [pagination, safeTasks]);
+  }, [safeTasks]);
 
   const processedTasks = useMemo(() => {
     if (!displayTasks || displayTasks.length === 0) {
