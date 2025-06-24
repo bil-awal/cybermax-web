@@ -15,8 +15,11 @@ interface TaskItemProps {
   task: Task;
 }
 
-// Define proper badge variant types
-type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'secondary' | 'primary';
+// Define badge variant types that match the Badge component
+type SupportedBadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'danger';
+
+// Internal variant type for deadline status logic
+type DeadlineVariant = 'success' | 'warning' | 'danger' | 'info' | 'secondary' | 'primary';
 
 export const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
   const { toggleTask, deleteTask } = useTasks();
@@ -73,8 +76,25 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
     }
   };
 
+  // Map internal variants to supported Badge variants
+  const mapToBadgeVariant = (variant: DeadlineVariant): SupportedBadgeVariant => {
+    switch (variant) {
+      case 'info':
+        return 'primary'; // Map info to primary
+      case 'secondary':
+        return 'default'; // Map secondary to default
+      case 'success':
+      case 'warning':
+      case 'danger':
+      case 'primary':
+        return variant; // These are already supported
+      default:
+        return 'default';
+    }
+  };
+
   // Enhanced deadline status calculation with proper typing
-  const getDeadlineStatus = (): { type: BadgeVariant; text: string } | null => {
+  const getDeadlineStatus = (): { type: DeadlineVariant; text: string } | null => {
     if (!task.endDate) return null;
     
     try {
@@ -99,7 +119,8 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
         const overdueDays = Math.abs(diffDays);
         return { 
           type: 'danger', 
-          text: overdueDays === 1 ? 'Overdue by 1 day' : `Overdue by ${overdueDays} days` 
+          text: overdueDays === 1 ? 
+            'Overdue by 1 day' : `Overdue by ${overdueDays} days` 
         };
       } else if (diffDays === 0) {
         return { type: 'warning', text: 'Due today' };
@@ -121,8 +142,8 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
   const deadlineStatus = getDeadlineStatus();
 
   // Enhanced PIC badge color mapping with proper typing
-  const getPicBadgeVariant = (pic: string | null | undefined): BadgeVariant => {
-    if (!pic) return 'secondary';
+  const getPicBadgeVariant = (pic: string | null | undefined): SupportedBadgeVariant => {
+    if (!pic) return 'default';
     
     const normalizedPic = pic.toLowerCase().trim();
     switch (normalizedPic) {
@@ -131,13 +152,13 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
       case 'manager':
         return 'warning';
       case 'supervisor':
-        return 'info';
+        return 'primary'; // Map supervisor to primary instead of info
       case 'staff':
         return 'primary';
       case 'intern':
-        return 'secondary';
+        return 'default'; // Map intern to default instead of secondary
       default:
-        return 'secondary';
+        return 'default';
     }
   };
 
@@ -179,12 +200,11 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
             
             {/* Deadline Status Badge */}
             {deadlineStatus && (
-              <Badge 
-                variant={deadlineStatus.type}
-                className="flex-shrink-0"
-              >
-                {deadlineStatus.text}
-              </Badge>
+              <div className="flex-shrink-0">
+                <Badge variant={mapToBadgeVariant(deadlineStatus.type)}>
+                  {deadlineStatus.text}
+                </Badge>
+              </div>
             )}
           </div>
           
@@ -237,7 +257,7 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
             
             {task.createdAt && (
               <span>
-                Created {formatDistance(new Date(task.createdAt), new Date())} ago
+                Created {formatDistance(new Date(task.createdAt))}
               </span>
             )}
           </div>
@@ -246,11 +266,10 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
         {/* Actions */}
         <div className="flex-shrink-0 flex gap-2">
           <Button
-            variant="ghost"
+            variant="danger"
             size="small"
             onClick={handleDelete}
             disabled={isDeleting || isToggling}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
           >
             <TrashIcon className="w-4 h-4" />
           </Button>

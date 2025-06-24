@@ -66,8 +66,8 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [getTasksUseCase]);
 
   // Validate state consistency with storage
-  const validateConsistency = useCallback(async () => {
-    if (!isInitialized.current) return;
+  const validateConsistency = useCallback(async (): Promise<Task[]> => {
+    if (!isInitialized.current) return tasks;
     
     try {
       const storedTasks = await getTasksUseCase.execute();
