@@ -1,4 +1,4 @@
-import { Task } from '../entities/Task';
+import { Task, ITask } from '../entities/Task';
 
 export interface ITaskRepository {
   findAll(): Promise<Task[]>;

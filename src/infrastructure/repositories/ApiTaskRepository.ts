@@ -9,14 +9,17 @@ export class ApiTaskRepository implements ITaskRepository {
     if (!response.ok) throw new Error('Failed to fetch tasks');
     
     const data: ITask[] = await response.json();
-    return data.map(t => new Task(
-      t.id,
-      t.title,
-      t.description,
-      t.completed,
-      new Date(t.createdAt),
-      new Date(t.updatedAt)
-    ));
+    return data.map(t => new Task({
+      id: t.id,
+      title: t.title,
+      description: t.description,
+      completed: t.completed,
+      createdAt: t.createdAt,
+      updatedAt: t.updatedAt,
+      pic: t.pic,
+      startDate: t.startDate,
+      endDate: t.endDate
+    }));
   }
 
   async findById(id: string): Promise<Task | null> {
@@ -24,14 +27,17 @@ export class ApiTaskRepository implements ITaskRepository {
     if (!response.ok) return null;
     
     const data: ITask = await response.json();
-    return new Task(
-      data.id,
-      data.title,
-      data.description,
-      data.completed,
-      new Date(data.createdAt),
-      new Date(data.updatedAt)
-    );
+    return new Task({
+      id: data.id,
+      title: data.title,
+      description: data.description,
+      completed: data.completed,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+      pic: data.pic,
+      startDate: data.startDate,
+      endDate: data.endDate
+    });
   }
 
   async create(task: Task): Promise<Task> {
@@ -44,14 +50,17 @@ export class ApiTaskRepository implements ITaskRepository {
     if (!response.ok) throw new Error('Failed to create task');
     
     const data: ITask = await response.json();
-    return new Task(
-      data.id,
-      data.title,
-      data.description,
-      data.completed,
-      new Date(data.createdAt),
-      new Date(data.updatedAt)
-    );
+    return new Task({
+      id: data.id,
+      title: data.title,
+      description: data.description,
+      completed: data.completed,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+      pic: data.pic,
+      startDate: data.startDate,
+      endDate: data.endDate
+    });
   }
 
   async update(task: Task): Promise<Task> {
@@ -64,14 +73,17 @@ export class ApiTaskRepository implements ITaskRepository {
     if (!response.ok) throw new Error('Failed to update task');
     
     const data: ITask = await response.json();
-    return new Task(
-      data.id,
-      data.title,
-      data.description,
-      data.completed,
-      new Date(data.createdAt),
-      new Date(data.updatedAt)
-    );
+    return new Task({
+      id: data.id,
+      title: data.title,
+      description: data.description,
+      completed: data.completed,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+      pic: data.pic,
+      startDate: data.startDate,
+      endDate: data.endDate
+    });
   }
 
   async delete(id: string): Promise<void> {

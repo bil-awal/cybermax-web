@@ -5,18 +5,24 @@ export interface CreateTaskParams {
   title: string;
   description?: string;
   completed?: boolean;
+  pic?: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 export class CreateTaskUseCase {
   constructor(private taskRepository: ITaskRepository) {}
 
   async execute(params: CreateTaskParams): Promise<Task> {
-    const taskData = {
-      ...params,
-      completed: params.completed ?? false
-    };
+    const task = Task.create({
+      title: params.title,
+      description: params.description,
+      completed: params.completed ?? false,
+      pic: params.pic,
+      startDate: params.startDate,
+      endDate: params.endDate
+    });
     
-    const task = Task.create(taskData);
     return await this.taskRepository.create(task);
   }
 }

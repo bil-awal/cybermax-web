@@ -13,7 +13,13 @@ interface TaskContextValue {
   tasks: Task[];
   loading: boolean;
   error: string | null;
-  createTask: (params: { title: string; description?: string }) => Promise<void>;
+  createTask: (params: { 
+    title: string; 
+    description?: string;
+    pic?: string;
+    startDate?: string;
+    endDate?: string;
+  }) => Promise<void>;
   toggleTask: (id: string) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
   generateReport: () => void;
@@ -49,7 +55,13 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [getTasksUseCase]);
 
-  const createTask = useCallback(async (params: { title: string; description?: string }) => {
+  const createTask = useCallback(async (params: { 
+    title: string; 
+    description?: string;
+    pic?: string;
+    startDate?: string;
+    endDate?: string;
+  }) => {
     try {
       const newTask = await createTaskUseCase.execute(params);
       setTasks(prev => [...prev, newTask]);

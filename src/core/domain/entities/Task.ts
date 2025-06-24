@@ -1,5 +1,5 @@
 // Task Entity Type Definition
-export interface Task {
+export interface ITask {
   id: string;
   title: string;
   description?: string;
@@ -9,6 +9,74 @@ export interface Task {
   completed: boolean;
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
+}
+
+// Task Class
+export class Task implements ITask {
+  constructor(
+    public id: string,
+    public title: string,
+    public description: string = '',
+    public completed: boolean = false,
+    public createdAt: Date = new Date(),
+    public updatedAt: Date = new Date(),
+    public pic?: string,
+    public startDate?: string,
+    public endDate?: string
+  ) {}
+
+  static create(data: {
+    title: string;
+    description?: string;
+    completed?: boolean;
+    pic?: string;
+    startDate?: string;
+    endDate?: string;
+  }): Task {
+    const now = new Date();
+    const id = crypto.randomUUID();
+    
+    return new Task(
+      id,
+      data.title,
+      data.description || '',
+      data.completed || false,
+      now,
+      now,
+      data.pic,
+      data.startDate,
+      data.endDate
+    );
+  }
+
+  updateTitle(title: string): void {
+    this.title = title;
+    this.updatedAt = new Date();
+  }
+
+  updateDescription(description: string): void {
+    this.description = description;
+    this.updatedAt = new Date();
+  }
+
+  toggleCompleted(): void {
+    this.completed = !this.completed;
+    this.updatedAt = new Date();
+  }
+
+  toJSON(): ITask {
+    return {
+      id: this.id,
+      title: this.title,
+      description: this.description,
+      completed: this.completed,
+      createdAt: this.createdAt.toISOString(),
+      updatedAt: this.updatedAt.toISOString(),
+      pic: this.pic,
+      startDate: this.startDate,
+      endDate: this.endDate
+    };
+  }
 }
 
 // Create Task DTO
@@ -92,7 +160,7 @@ export interface TaskStatistics {
 
 // API Response types
 export interface TaskResponse {
-  data: Task[];
+  data: ITask[];
   pagination?: {
     total: number;
     page: number;
