@@ -29,7 +29,7 @@ export class PdfGenerator implements IPdfGenerator {
       this.addSummarySection(doc, cleanTasks);
       
       // Add task list
-      const currentY = this.addTaskList(doc, cleanTasks); // Fixed: Line 32 - const instead of let
+      const currentY = this.addTaskList(doc, cleanTasks);
       
       // Add footer
       this.addFooter(doc, currentY);
@@ -106,7 +106,7 @@ export class PdfGenerator implements IPdfGenerator {
   /**
    * Add report header with title and metadata
    */
-  private addReportHeader(doc: jsPDF, date: Date, _tasks: Task[]): void { // Fixed: Line 109 - added underscore to unused parameter
+  private addReportHeader(doc: jsPDF, date: Date, tasks: Task[]): void {
     // Main title
     doc.setFontSize(24);
     doc.setFont('helvetica', 'bold');
@@ -127,10 +127,16 @@ export class PdfGenerator implements IPdfGenerator {
     })}`;
     doc.text(generatedText, this.MARGIN, 40);
     
+    // Add task count info
+    doc.setFontSize(10);
+    doc.setTextColor(120, 120, 120);
+    const taskCountText = `Total Tasks: ${tasks.length}`;
+    doc.text(taskCountText, this.MARGIN, 50);
+    
     // Horizontal line
     doc.setDrawColor(200, 200, 200);
     doc.setLineWidth(0.5);
-    doc.line(this.MARGIN, 45, this.PAGE_WIDTH - this.MARGIN, 45);
+    doc.line(this.MARGIN, 55, this.PAGE_WIDTH - this.MARGIN, 55);
   }
 
   /**
@@ -145,7 +151,7 @@ export class PdfGenerator implements IPdfGenerator {
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(40, 40, 40);
-    doc.text('Summary', this.MARGIN, 60);
+    doc.text('Summary', this.MARGIN, 70);
     
     // Statistics
     doc.setFontSize(11);
@@ -158,7 +164,7 @@ export class PdfGenerator implements IPdfGenerator {
       { label: 'Overdue:', value: overdueTasks.length.toString(), color: [239, 68, 68] }
     ];
     
-    let yPos = 70;
+    let yPos = 80;
     stats.forEach(stat => {
       doc.setTextColor(100, 100, 100);
       doc.text(stat.label, this.MARGIN, yPos);
@@ -180,7 +186,7 @@ export class PdfGenerator implements IPdfGenerator {
    * Add task list to the PDF
    */
   private addTaskList(doc: jsPDF, tasks: Task[]): number {
-    let currentY = 115;
+    let currentY = 125;
     
     // Section title
     doc.setFontSize(14);
@@ -256,7 +262,7 @@ export class PdfGenerator implements IPdfGenerator {
    * Add task metadata (PIC, dates, etc.)
    */
   private addTaskMetadata(doc: jsPDF, task: Task, startY: number): number {
-    const currentY = startY + 3; // Fixed: Line 259 - const instead of let since it's never reassigned
+    const currentY = startY + 3;
     
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
@@ -352,8 +358,8 @@ export class PdfGenerator implements IPdfGenerator {
   /**
    * Add footer to the PDF
    */
-  private addFooter(doc: jsPDF, _currentY: number): void { // Fixed: Line 355 - added underscore to unused parameter
-    const footerY = this.PAGE_HEIGHT - 20;
+  private addFooter(doc: jsPDF, currentY: number): void {
+    const footerY = Math.max(currentY + 20, this.PAGE_HEIGHT - 20);
     
     // Footer line
     doc.setDrawColor(200, 200, 200);
@@ -385,8 +391,8 @@ export class PdfGenerator implements IPdfGenerator {
         month: 'short',
         day: 'numeric'
       });
-    } catch (_error) { // Fixed: Line 407 - added underscore to unused error parameter
-      console.error('PdfGenerator: Error formatting date:', _error);
+    } catch (error) {
+      console.error('PdfGenerator: Error formatting date:', error);
       return 'Invalid Date';
     }
   }

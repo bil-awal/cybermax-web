@@ -280,7 +280,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setError(`Failed to generate report: ${err instanceof Error ? err.message : 'Unknown error'}`);
       throw err;
     }
-  }, [tasks, pdfGenerator, getTasksUseCase, validateConsistency]);
+  }, [pdfGenerator, getTasksUseCase, validateConsistency]); // Removed 'tasks' dependency
 
   // Clear error after some time
   useEffect(() => {

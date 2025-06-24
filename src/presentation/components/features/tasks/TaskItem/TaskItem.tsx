@@ -4,10 +4,19 @@ import { Button } from '@/presentation/components/common/Button';
 import { Badge } from '@/presentation/components/common/Badge';
 import { useTasks } from '@/presentation/hooks/useTasks';
 import { formatDistance } from '@/presentation/utils/formatters';
+import { 
+  UserIcon, 
+  CalendarIcon, 
+  ClockIcon,
+  TrashIcon 
+} from '@heroicons/react/24/outline';
 
 interface TaskItemProps {
   task: Task;
 }
+
+// Define proper badge variant types
+type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'secondary' | 'primary';
 
 export const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
   const { toggleTask, deleteTask } = useTasks();
@@ -64,8 +73,8 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
     }
   };
 
-  // Enhanced deadline status calculation
-  const getDeadlineStatus = () => {
+  // Enhanced deadline status calculation with proper typing
+  const getDeadlineStatus = (): { type: BadgeVariant; text: string } | null => {
     if (!task.endDate) return null;
     
     try {
@@ -111,8 +120,8 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
 
   const deadlineStatus = getDeadlineStatus();
 
-  // Enhanced PIC badge color mapping
-  const getPicBadgeVariant = (pic: string | null | undefined) => {
+  // Enhanced PIC badge color mapping with proper typing
+  const getPicBadgeVariant = (pic: string | null | undefined): BadgeVariant => {
     if (!pic) return 'secondary';
     
     const normalizedPic = pic.toLowerCase().trim();
@@ -171,7 +180,7 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
             {/* Deadline Status Badge */}
             {deadlineStatus && (
               <Badge 
-                variant={deadlineStatus.type as any} 
+                variant={deadlineStatus.type}
                 className="flex-shrink-0"
               >
                 {deadlineStatus.text}
@@ -186,7 +195,7 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
               <div className="flex items-center gap-2">
                 <UserIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
                 <span className="text-gray-600 text-xs">PIC:</span>
-                <Badge variant={getPicBadgeVariant(task.pic) as any} size="small">
+                <Badge variant={getPicBadgeVariant(task.pic)} size="small">
                   {task.pic}
                 </Badge>
               </div>
@@ -223,93 +232,30 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
               variant={task.completed ? 'success' : 'warning'} 
               size="small"
             >
-              {task.completed ? 'Completed' : 'Pending'}
+              {task.completed ? 'Completed' : 'In Progress'}
             </Badge>
             
             {task.createdAt && (
-              <span>Created {formatDistance(task.createdAt)}</span>
-            )}
-            
-            {task.updatedAt && task.updatedAt !== task.createdAt && (
-              <span>Updated {formatDistance(task.updatedAt)}</span>
+              <span>
+                Created {formatDistance(new Date(task.createdAt), new Date())} ago
+              </span>
             )}
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex-shrink-0 flex items-center gap-2">
+        {/* Actions */}
+        <div className="flex-shrink-0 flex gap-2">
           <Button
-            variant={task.completed ? 'secondary' : 'success'}
-            size="small"
-            onClick={handleToggle}
-            loading={isToggling}
-            disabled={isToggling}
-            className="min-w-[80px] transition-all duration-200"
-          >
-            {isToggling ? 'Loading...' : task.completed ? 'Undo' : 'Complete'}
-          </Button>
-          
-          <Button
-            variant="danger"
+            variant="ghost"
             size="small"
             onClick={handleDelete}
-            loading={isDeleting}
-            disabled={isDeleting}
-            className="min-w-[70px] transition-all duration-200"
+            disabled={isDeleting || isToggling}
+            className="text-red-600 hover:text-red-700 hover:bg-red-50"
           >
-            {isDeleting ? 'Deleting...' : 'Delete'}
+            <TrashIcon className="w-4 h-4" />
           </Button>
         </div>
       </div>
     </div>
   );
 };
-
-// Enhanced Icon Components with better styling
-const UserIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg 
-    className={className} 
-    fill="none" 
-    viewBox="0 0 24 24" 
-    stroke="currentColor"
-    strokeWidth={2}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-    />
-  </svg>
-);
-
-const CalendarIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg 
-    className={className} 
-    fill="none" 
-    viewBox="0 0 24 24" 
-    stroke="currentColor"
-    strokeWidth={2}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-    />
-  </svg>
-);
-
-const ClockIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg 
-    className={className} 
-    fill="none" 
-    viewBox="0 0 24 24" 
-    stroke="currentColor"
-    strokeWidth={2}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-    />
-  </svg>
-);

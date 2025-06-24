@@ -13,7 +13,9 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\""
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "clsx": "^2.1.1",
+    "heroicons": "^2.2.0",
     "jspdf": "^3.0.1",
     "next": "15.3.4",
     "react": "^19.0.0",
