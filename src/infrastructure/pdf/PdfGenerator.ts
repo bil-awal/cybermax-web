@@ -29,7 +29,7 @@ export class PdfGenerator implements IPdfGenerator {
       this.addSummarySection(doc, cleanTasks);
       
       // Add task list
-      let currentY = this.addTaskList(doc, cleanTasks);
+      const currentY = this.addTaskList(doc, cleanTasks); // Fixed: Line 32 - const instead of let
       
       // Add footer
       this.addFooter(doc, currentY);
@@ -106,7 +106,7 @@ export class PdfGenerator implements IPdfGenerator {
   /**
    * Add report header with title and metadata
    */
-  private addReportHeader(doc: jsPDF, date: Date, tasks: Task[]): void {
+  private addReportHeader(doc: jsPDF, date: Date, _tasks: Task[]): void { // Fixed: Line 109 - added underscore to unused parameter
     // Main title
     doc.setFontSize(24);
     doc.setFont('helvetica', 'bold');
@@ -256,7 +256,7 @@ export class PdfGenerator implements IPdfGenerator {
    * Add task metadata (PIC, dates, etc.)
    */
   private addTaskMetadata(doc: jsPDF, task: Task, startY: number): number {
-    let currentY = startY + 3;
+    const currentY = startY + 3; // Fixed: Line 259 - const instead of let since it's never reassigned
     
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
@@ -352,7 +352,7 @@ export class PdfGenerator implements IPdfGenerator {
   /**
    * Add footer to the PDF
    */
-  private addFooter(doc: jsPDF, currentY: number): void {
+  private addFooter(doc: jsPDF, _currentY: number): void { // Fixed: Line 355 - added underscore to unused parameter
     const footerY = this.PAGE_HEIGHT - 20;
     
     // Footer line
@@ -385,8 +385,8 @@ export class PdfGenerator implements IPdfGenerator {
         month: 'short',
         day: 'numeric'
       });
-    } catch (error) {
-      console.error('PdfGenerator: Error formatting date:', error);
+    } catch (_error) { // Fixed: Line 407 - added underscore to unused error parameter
+      console.error('PdfGenerator: Error formatting date:', _error);
       return 'Invalid Date';
     }
   }
@@ -404,7 +404,7 @@ export class PdfGenerator implements IPdfGenerator {
       endDate.setHours(0, 0, 0, 0);
       
       return endDate < today;
-    } catch (error) {
+    } catch {
       return false;
     }
   }

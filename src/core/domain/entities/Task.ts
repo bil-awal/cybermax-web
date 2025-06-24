@@ -1,4 +1,4 @@
-// Task Entity Type Definition
+// Task Entity Type Definition (for serialization/API)
 export interface ITask {
   id: string;
   title: string;
@@ -11,8 +11,8 @@ export interface ITask {
   updatedAt: string; // ISO date string
 }
 
-// Task Class
-export class Task implements ITask {
+// Task Class - TIDAK implement ITask secara langsung
+export class Task {
   constructor(
     public id: string,
     public title: string,
@@ -43,6 +43,20 @@ export class Task implements ITask {
       data.completed || false,
       now,
       now,
+      data.pic,
+      data.startDate,
+      data.endDate
+    );
+  }
+
+  static fromJSON(data: ITask): Task {
+    return new Task(
+      data.id,
+      data.title,
+      data.description || '',
+      data.completed,
+      new Date(data.createdAt),
+      new Date(data.updatedAt),
       data.pic,
       data.startDate,
       data.endDate
@@ -172,7 +186,7 @@ export interface TaskResponse {
 export interface TaskApiError {
   message: string;
   code?: string;
-  details?: any;
+  details?: unknown;
 }
 
 // Form validation types
