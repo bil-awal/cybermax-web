@@ -101,38 +101,43 @@ export class UpdateTaskUseCase {
         hasChanges = true;
       }
 
+      // If no changes detected, return the original task as Task instance
       if (!hasChanges) {
         console.log('UpdateTaskUseCase: No changes detected, returning original task');
-        return task;
+        return task; // This should now be a Task instance, not ITask
       }
 
       console.log('UpdateTaskUseCase: Saving updated task:', {
         id: taskToUpdate.id,
         title: taskToUpdate.title,
+        description: taskToUpdate.description,
         completed: taskToUpdate.completed,
-        updatedAt: taskToUpdate.updatedAt
+        pic: taskToUpdate.pic,
+        startDate: taskToUpdate.startDate,
+        endDate: taskToUpdate.endDate,
+        hasChanges
       });
 
       // Save the updated task
-      const savedTask = await this.taskRepository.update(taskToUpdate);
+      const result = await this.taskRepository.update(taskToUpdate);
       
       console.log('UpdateTaskUseCase: Task updated successfully:', {
-        id: savedTask.id,
-        title: savedTask.title,
-        completed: savedTask.completed
+        id: result.id,
+        title: result.title,
+        completed: result.completed,
+        updatedAt: result.updatedAt
       });
 
-      return savedTask;
-
+      return result;
+      
     } catch (error) {
       console.error('UpdateTaskUseCase: Error updating task:', error);
       
-      // Re-throw with more context
       if (error instanceof Error) {
-        throw new Error(`Failed to update task ${id}: ${error.message}`);
-      } else {
-        throw new Error(`Failed to update task ${id}: Unknown error`);
+        throw error;
       }
+      
+      throw new Error(`Failed to update task: ${String(error)}`);
     }
   }
 }

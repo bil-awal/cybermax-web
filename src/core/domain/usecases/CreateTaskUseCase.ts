@@ -1,4 +1,4 @@
-import { ITask } from '../entities/Task';
+import { Task } from '../entities/Task';
 import { ITaskRepository } from '../repositories/ITaskRepository';
 
 export interface CreateTaskParams {
@@ -13,17 +13,17 @@ export interface CreateTaskParams {
 export class CreateTaskUseCase {
   constructor(private taskRepository: ITaskRepository) {}
 
-  async execute(params: CreateTaskParams): Promise<ITask> {
-    // Create task data without auto-generated fields
-    const taskData: Omit<ITask, 'id' | 'createdAt' | 'updatedAt'> = {
+  async execute(params: CreateTaskParams): Promise<Task> {
+    // Create a new Task instance using the static create method
+    const task = Task.create({
       title: params.title,
       description: params.description,
-      completed: params.completed ?? false,
+      completed: params.completed,
       pic: params.pic,
       startDate: params.startDate,
       endDate: params.endDate
-    };
+    });
     
-    return await this.taskRepository.create(taskData);
+    return await this.taskRepository.create(task);
   }
 }
